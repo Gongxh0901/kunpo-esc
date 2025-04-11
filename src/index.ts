@@ -23,4 +23,4 @@ class World {
 // 使用示例
 const world = new World();
 const entity = world.createEntity();
-console.log('Created entity:', entity); 
+console.log('Created entity:', entity);
