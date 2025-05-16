@@ -46,7 +46,7 @@ export class CommandPool {
     constructor(entityPool: EntityPool) {
         this.entityPool = entityPool;
         // 命令回收池
-        this.recyclePool = new RecyclePool<Command>(64, () => new Command(), (command) => command.reset());
+        this.recyclePool = new RecyclePool<Command>(() => new Command(), command => command.reset(), 64);
         this.recyclePool.name = "CommandPool";
     }
 

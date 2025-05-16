@@ -74,12 +74,10 @@ export class EntityPool {
         this._componentPool = componentPool;
 
         // 初始化实体回收池
-        this.recyclePool = new RecyclePool<Entity>(128, () => this.unique++);
+        this.recyclePool = new RecyclePool<Entity>(() => this.unique++, null, 128, 500000);
         this.recyclePool.name = "EntityPool";
         // 实体掩码回收池
-        this.maskRecyclePool = new RecyclePool<IMask>(128, () => createMask(), (mask: IMask) => {
-            mask.clear();
-        });
+        this.maskRecyclePool = new RecyclePool<IMask>(() => createMask(), mask => mask.clear(), 128, 4096);
         this.maskRecyclePool.name = "MaskPool";
     }
 

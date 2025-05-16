@@ -20,7 +20,7 @@ export class SparseSet<T extends IComponent> {
     private readonly sparse: Map<Entity, number> = new Map();
 
     /**
-     * 密集数组索引实体的反向映射 (数组索引 -> 实体)
+     * 密集数组索引实体的反向映射 (数组索引 == 实体索引)
      * @internal
      */
     private entities: Entity[] = [];
@@ -116,15 +116,15 @@ export class SparseSet<T extends IComponent> {
      * 获取包含此组件的所有实体
      */
     public getEntities(): Entity[] {
-        return this.entities.slice(0, this.size);
+        return this.entities;
     }
 
-    // /**
-    //  * 获取所有组件
-    //  */
-    // public getComponents(): T[] {
-    //     return [...this.dense];
-    // }
+    /**
+     * 获取所有组件
+     */
+    public getComponents(): T[] {
+        return this.dense;
+    }
 
     // /**
     //  * 实现迭代器接口，支持for...of循环

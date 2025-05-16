@@ -4,7 +4,7 @@
  * @Description: 通用对象回收池
  * 提供高效的对象复用、内存预分配和自动扩容功能
  * 
- * 设置最大容量, 不能超过2048个
+ * 设置最大容量, 默认不能超过2048个
  */
 
 export class RecyclePool<T> {
@@ -19,6 +19,9 @@ export class RecyclePool<T> {
 
     /** 池的总容量 */
     private _capacity: number = 0;
+
+    /** 最大容量 */
+    private max: number = 2048;
 
     /** 创建新对象的工厂函数 */
     private factory: () => T;
@@ -35,7 +38,8 @@ export class RecyclePool<T> {
      * @param min 初始容量
      * @param reset 重置对象的函数(可选)
      */
-    constructor(min: number = 32, factory: () => T, reset?: (obj: T) => void) {
+    constructor(factory: () => T, reset?: (obj: T) => void, min: number = 32, max: number = 2048) {
+        this.max = max;
         this.factory = factory;
         this.reset = reset || ((obj: T) => {/* 默认不做任何操作 */ });
         // 初始化容量
@@ -73,7 +77,7 @@ export class RecyclePool<T> {
      * @returns 是否成功归还
      */
     public insert(obj: T): void {
-        if (this._capacity >= 2048) {
+        if (this._capacity >= this.max) {
             return;
         }
         // 池已满，先扩容再归还

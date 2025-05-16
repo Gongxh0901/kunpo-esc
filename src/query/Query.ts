@@ -220,6 +220,10 @@ export class Query {
         // 3. 预分配足够空间，避免动态扩容
         len = entities.length;
         this.cachedEntities.length = len;
+        this.cachedComponents.forEach((components) => {
+            components.length = len;
+        });
+
         let total = 0;
         // 4. 高效遍历和筛选
         for (let i = 0; i < len; i++) {
@@ -228,26 +232,15 @@ export class Query {
             // 一次性检查所有条件，减少分支预测失败
             if (entityMask.include(this._includeMask) && !entityMask.any(this._excludeMask)) {
                 this.cachedEntities[total] = entity;
-
-                // 必须组件
-                let compLength = this.includeComponents.length;
-                for (let j = 0; j < compLength; j++) {
-                    let type = this.includeComponents[j];
-                    const component = componentPool.getComponent(entity, type);
-                    this.cachedComponents.get(type)[total] = component;
-                }
-                // 可选组件
-                compLength = this.optionalComponents.length;
-                for (let j = 0; j < compLength; j++) {
-                    let type = this.optionalComponents[j];
-                    const component = componentPool.getComponent(entity, type);
-                    this.cachedComponents.get(type)[total] = component;
-                }
+                // 批量获取必须组件
+                componentPool.getComponentBatch(entity, this.includeComponents, this.cachedComponents, total);
+                // 批量获取可选组件
+                componentPool.getComponentBatch(entity, this.optionalComponents, this.cachedComponents, total);
                 total++;
             }
         }
         // 如果结果数量小于预分配空间，裁剪数组
-        this.trimCache(Math.min(total, entities.length));
+        this.trimCache(total);
     }
 
     /**
